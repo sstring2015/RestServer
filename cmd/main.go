@@ -30,8 +30,8 @@ func main() {
 	protected := r.Group("/api/cars")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.POST("/add", h.InsertCar)
-	// protected.GET("", h.GetAllCars)
-	// protected.GET(":model", h.GetCarbyModel)
+	protected.GET("", h.GetAllCars)
+	protected.GET(":id", h.GetAllCars)
 
 	r.Run()
 }
