@@ -7,6 +7,7 @@ import (
 	"github.com/RestServer/pkg/config"
 	"github.com/RestServer/pkg/database"
 	"github.com/RestServer/pkg/models"
+	"github.com/RestServer/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -85,17 +86,21 @@ func (s *Store) InsertCar(data models.Car) error {
 
 	return err
 }
-
-func (s *Store) GetAllCars() ([]models.Car, error) {
+func (s *Store) GetAllCars(pagination utils.Pagination) ([]models.Car, int64, error) {
 	collection := s.db.Collection("cars")
 
 	// Set options for sorting or filtering if required
 	findOptions := options.Find()
 
-	// Find all cars
+	// Apply pagination
+	skip := int64((pagination.PageNumber - 1) * pagination.PageSize)
+	findOptions.SetSkip(skip)
+	findOptions.SetLimit(int64(pagination.PageSize))
+
+	// Find cars with pagination
 	cur, err := collection.Find(context.Background(), bson.M{}, findOptions)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer cur.Close(context.Background())
 
@@ -105,14 +110,19 @@ func (s *Store) GetAllCars() ([]models.Car, error) {
 	for cur.Next(context.Background()) {
 		var car models.Car
 		if err := cur.Decode(&car); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		cars = append(cars, car)
 	}
 
 	if err := cur.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return cars, nil
+	totalCount, err := collection.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return cars, totalCount, nil
 }

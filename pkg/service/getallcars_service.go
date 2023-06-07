@@ -5,16 +5,17 @@ import (
 
 	"github.com/RestServer/pkg/models"
 	"github.com/RestServer/pkg/serror"
+	"github.com/RestServer/pkg/utils"
 )
 
-func (s *Service) GetAllCars() ([]models.Car, error) {
+func (s *Service) GetAllCars(pagination utils.Pagination) ([]models.Car, int64, error) {
 
-	cars, err := s.store.GetAllCars()
+	cars, total, err := s.store.GetAllCars(pagination)
 	if err != nil {
 		fmt.Print(err)
-		return nil, serror.InternalServerError("Failed to Retrieve the cars")
+		return nil, 0, serror.InternalServerError("Failed to Retrieve the cars")
 	}
 
-	return cars, nil
+	return cars, total, nil
 
 }
