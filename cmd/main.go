@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/RestServer/pkg/config"
 	"github.com/RestServer/pkg/handlers"
+	"github.com/RestServer/pkg/middlewares"
 	"github.com/RestServer/pkg/service"
 	"github.com/RestServer/pkg/store"
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,14 @@ func init() {
 func main() {
 	r := gin.Default()
 	public := r.Group("/api")
-	public.POST("/signin", handlers.SignIn)
-	public.POST("/signup", handlers.SignUp)
+	h := handlers.New()
+	public.POST("/signin", h.SignIn)
+	public.POST("/signup", h.SignUp)
+	protected := r.Group("/api/cars")
+	protected.Use(middlewares.JwtAuthMiddleware())
+	protected.POST("/add", h.InsertCar)
+	// protected.GET("", h.GetAllCars)
+	// protected.GET(":model", h.GetCarbyModel)
+
 	r.Run()
 }

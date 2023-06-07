@@ -4,3 +4,7 @@ database:
   name: restserver
   username: root
   password: password
+
+jwt:
+  API_SECRET: yoursecretstring
+  TOKEN_HOUR_LIFESPAN: 12

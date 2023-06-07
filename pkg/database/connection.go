@@ -11,7 +11,6 @@ import (
 
 func ConnectToMongoDB(cfg config.DatabaseConfig) (*mongo.Database, error) {
 	connectionString := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.Username, cfg.Password, cfg.Host, cfg.Port)
-
 	clientOptions := options.Client().ApplyURI(connectionString)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
