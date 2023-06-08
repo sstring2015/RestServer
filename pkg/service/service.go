@@ -14,6 +14,7 @@ type UserService interface {
 	GetAllCars(data utils.Pagination) ([]models.Car, int64, error)
 	GetCarByID(id primitive.ObjectID) (car models.Car, err error)
 	UpdateCarByID(data models.Car, id primitive.ObjectID) error
+	DeleteByCarId(id primitive.ObjectID) error
 }
 
 type Service struct {

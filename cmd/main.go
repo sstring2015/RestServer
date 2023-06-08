@@ -33,6 +33,7 @@ func main() {
 	protected.GET("", h.GetAllCars)
 	protected.GET(":id", h.GetAllCars)
 	protected.PUT(":id", h.UpdateCarByID)
+	protected.DELETE(":id", h.DeleteByCarId)
 
 	r.Run()
 }
