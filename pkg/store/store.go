@@ -8,6 +8,7 @@ import (
 	"github.com/RestServer/pkg/database"
 	"github.com/RestServer/pkg/models"
 	"github.com/RestServer/pkg/utils"
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -125,4 +126,21 @@ func (s *Store) GetAllCars(pagination utils.Pagination) ([]models.Car, int64, er
 	}
 
 	return cars, totalCount, nil
+}
+
+func (s *Store) UpdateCarById(filter bson.M, updater bson.M) error {
+	collection := s.db.Collection("cars")
+	_, err := collection.UpdateOne(context.Background(), filter, updater)
+	if err != nil {
+		return errors.Wrap(err, "errors updating")
+	}
+	return nil
+}
+func (s *Store) DeleteByCarId(filter bson.M) error {
+	collection := s.db.Collection("cars")
+	_, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		return errors.Wrap(err, "errors deleting")
+	}
+	return nil
 }

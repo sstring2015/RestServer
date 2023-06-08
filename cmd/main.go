@@ -32,6 +32,7 @@ func main() {
 	protected.POST("/add", h.InsertCar)
 	protected.GET("", h.GetAllCars)
 	protected.GET(":id", h.GetAllCars)
+	protected.PUT(":id", h.UpdateCarByID)
 
 	r.Run()
 }
