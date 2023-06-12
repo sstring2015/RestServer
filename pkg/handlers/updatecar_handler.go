@@ -9,6 +9,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// UpdateCarByID handles the PUT /cars/{id} endpoint.
+// @Summary Update a car by ID
+// @Description Update an existing car with the provided details
+// @Tags Cars
+// @Accept json
+// @Produce json
+// @Param id path string true "Car ID"
+// @Param carData body models.Car true "Car details"
+// @Success 200 {string} string "Updated successfully"
+// @Router /api/cars/{id} [put]
 func (h *Handler) UpdateCarByID(c *gin.Context) {
 	id := c.Param("id")
 	carid, err := primitive.ObjectIDFromHex(id)

@@ -8,6 +8,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// DeleteByCarId handles the DELETE /cars/{id} endpoint.
+// @Summary Delete car by ID
+// @Description Delete a car based on its ID
+// @Tags Cars
+// @Accept json
+// @Produce json
+// @Param id path string true "ID"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Router /cars/{id} [delete]
 func (h *Handler) DeleteByCarId(c *gin.Context) {
 	id := c.Param("id")
 	carid, err := primitive.ObjectIDFromHex(id)

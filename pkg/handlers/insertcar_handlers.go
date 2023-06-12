@@ -8,6 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// InsertCar handles the POST /cars endpoint.
+// @Summary Insert a new car
+// @Description Insert a new car with the provided details
+// @Tags Cars
+// @Accept json
+// @Produce json
+// @Param carData body models.Car true "Car details"
+// @Success 201 {object} gin.H "success"
+// @Router /api/cars/add [post]
 func (h *Handler) InsertCar(c *gin.Context) {
 	var carData models.Car
 	if c.BindJSON(&carData) != nil {

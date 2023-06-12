@@ -5,11 +5,27 @@ import (
 	"strconv"
 
 	"github.com/RestServer/pkg/errorutil"
+	"github.com/RestServer/pkg/models"
 	"github.com/RestServer/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type GetAllCarsResponse struct {
+    Cars       []models.Car `json:"cars"`
+    TotalPages int64        `json:"totalPages"`
+}
+
+// GetAllCars retrieves all cars with pagination.
+// @Summary Get all cars with pagination
+// @Description Retrieve all cars with pagination
+// @Tags Cars
+// @Accept json
+// @Produce json
+// @Param _start query integer false "Start index for pagination"
+// @Param _end query integer false "End index for pagination"
+// @Success 200 {object} GetAllCarsResponse "success"
+// @Router /api/cars [get]
 func (h *Handler) GetAllCars(c *gin.Context) {
 
 	idParam := c.Query("id")

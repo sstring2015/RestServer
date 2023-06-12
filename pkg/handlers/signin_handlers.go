@@ -9,6 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SignIn godoc
+// @Summary      Create an Item
+// @Description  Sign in user with email and generate token
+// @Tags         Authentication
+// @Accept       json
+// @Produce      json
+// @Param        user body models.UserInput true "User input data"
+// @Success 200 {string} string "User Logged In"
+// @Router       /api/signin [post]
 func (h *Handler) SignIn(c *gin.Context) {
 	var userData models.UserInput
 	if c.BindJSON(&userData) != nil {
