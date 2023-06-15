@@ -18,10 +18,10 @@ type UserService interface {
 }
 
 type Service struct {
-	store *store.Store
+	store store.Store
 }
 
-func NewUserService(store *store.Store) *Service {
+func NewUserService(store store.Store) *Service {
 	return &Service{
 		store: store,
 	}

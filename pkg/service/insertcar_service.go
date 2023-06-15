@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/RestServer/pkg/models"
 	"github.com/RestServer/pkg/serror"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (s *Service) InsertCar(data models.Car) error {

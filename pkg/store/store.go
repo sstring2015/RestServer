@@ -3,48 +3,49 @@ package store
 import (
 	"context"
 	"log"
+	"sync"
 
 	"github.com/RestServer/pkg/config"
 	"github.com/RestServer/pkg/database"
 	"github.com/RestServer/pkg/models"
 	"github.com/RestServer/pkg/utils"
 	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2/bson"
 )
 
-type Store struct {
+type dbStore struct {
 	db *mongo.Database
 }
 
-var instance *Store
+var instance Store = (*dbStore)(nil)
+var once sync.Once
 
 // GetStore returns the singleton instance of the Store.
-func GetStore(cfg config.DatabaseConfig) *Store {
-	if instance == nil {
+func GetStore(cfg config.DatabaseConfig) Store {
+	once.Do(func() {
 		db, err := database.ConnectToMongoDB(cfg)
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		instance = &Store{
+		instance = &dbStore{
 			db: db,
 		}
-	}
+	})
 	return instance
 }
 
 // GetUserByEmail retrieves a user by email.
-func (s *Store) GetUserByEmail(filter bson.M) (user models.User, err error) {
+func (s *dbStore) GetUserByEmail(filter bson.M) (user models.User, err error) {
 	collection := s.db.Collection("users")
 	err = collection.FindOne(context.Background(), filter).Decode(&user)
 	return user, err
 }
 
 // InsertUser inserts a new user into the database.
-func (s *Store) InsertUser(data models.User) error {
+func (s *dbStore) InsertUser(data models.User) error {
 	collection := s.db.Collection("users")
 	id := primitive.NewObjectID()
 	user := models.User{
@@ -59,21 +60,21 @@ func (s *Store) InsertUser(data models.User) error {
 }
 
 // GetCarByModelBrand retrieves a car by model and brand.
-func (s *Store) GetCarByModelBrand(filter bson.M) (car models.Car, err error) {
+func (s *dbStore) GetCarByModelBrand(filter bson.M) (car models.Car, err error) {
 	collection := s.db.Collection("cars")
 	err = collection.FindOne(context.Background(), filter).Decode(&car)
 	return car, err
 }
 
 // GetCarByModelBrand retrieves a car by model and brand.
-func (s *Store) GetCarByID(filter bson.M) (car models.Car, err error) {
+func (s *dbStore) GetCarByID(filter bson.M) (car models.Car, err error) {
 	collection := s.db.Collection("cars")
 	err = collection.FindOne(context.Background(), filter).Decode(&car)
 	return car, err
 }
 
 // InsertCar inserts a new car into database
-func (s *Store) InsertCar(data models.Car) error {
+func (s *dbStore) InsertCar(data models.Car) error {
 	collection := s.db.Collection("cars")
 	id := primitive.NewObjectID()
 	car := models.Car{
@@ -87,7 +88,7 @@ func (s *Store) InsertCar(data models.Car) error {
 
 	return err
 }
-func (s *Store) GetAllCars(pagination utils.Pagination) ([]models.Car, int64, error) {
+func (s *dbStore) GetAllCars(pagination utils.Pagination) ([]models.Car, int64, error) {
 	collection := s.db.Collection("cars")
 
 	// Set options for sorting or filtering if required
@@ -128,7 +129,7 @@ func (s *Store) GetAllCars(pagination utils.Pagination) ([]models.Car, int64, er
 	return cars, totalCount, nil
 }
 
-func (s *Store) UpdateCarById(filter bson.M, updater bson.M) error {
+func (s *dbStore) UpdateCarByID(filter bson.M, updater bson.M) error {
 	collection := s.db.Collection("cars")
 	_, err := collection.UpdateOne(context.Background(), filter, updater)
 	if err != nil {
@@ -136,7 +137,7 @@ func (s *Store) UpdateCarById(filter bson.M, updater bson.M) error {
 	}
 	return nil
 }
-func (s *Store) DeleteByCarId(filter bson.M) error {
+func (s *dbStore) DeleteByCarID(filter bson.M) error {
 	collection := s.db.Collection("cars")
 	_, err := collection.DeleteOne(context.Background(), filter)
 	if err != nil {
